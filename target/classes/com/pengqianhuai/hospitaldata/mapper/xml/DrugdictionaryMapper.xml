@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pengqianhuai.hospitaldata.mapper.DrugdictionaryMapper">
+
+    <select id="selectDrugdictionary" resultType="map">
+        select
+        ar.areaId,ar.areaName,dru.drugId,dru.drugName,dru.sellingPrice,dru.typeId,ty.typeName,un.unitId,un.unitName from
+        drugdictionary as dru
+        left join area as ar on(ar.areaId=dru.areaId)
+        left join type as ty on(ty.typeId=dru.typeId)
+        left join unit as un on(un.unitId=dru.unitId)
+        where 1=1
+        <if test="drugName!=null">
+            and dru.drugName like '%${drugName}%'
+        </if>
+        limit ${(page-1)*limit},${limit}
+    </select>
+
+</mapper>

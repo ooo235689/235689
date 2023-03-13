@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pengqianhuai.hospitaldata.mapper.ReportMapper">
+
+    <select id="selectReport" resultType="map">
+        select rep.reportId,rep.reportName,rep.carid,rep.price,rep.sex,rep.age,rep.phone,left(rep.carid,6) as
+        carido,right(rep.carid,3) as
+        caridt,reg.type,DATE_FORMAT(rep.time,'%Y-%m-%d') as datime,DATE_FORMAT(rep.time,'%Y-%m-%d') as
+        time,dep.department,doc.doctorName,rep.price,reg.type,rep.users,rep.zhuan,rep.sex,doc.departmentId as
+        ddepartmentid,rep.state,doc.doctorId from report as rep
+        left join registeredtype reg on(rep.reportType=reg.registeredId)
+        left join departments dep on(dep.departmentId=rep.department)
+        left join doctor doc on(rep.doctor=doc.doctorId)
+        where 1=1 and rep.state=#{states}
+        <if test="state==1">
+            and to_days(now())-to_days(rep.time)<![CDATA[<=]]>0
+        </if>
+        <if test="state==2">
+            and to_days(rep.time)=TO_DAYS(now())
+        </if>
+        <if test="state==3">
+            and to_days(rep.time)-to_days(now())>=1
+        </if>
+        <if test="cc!=null">
+            and rep.reportName like '%${cc}%'
+        </if>
+
+        <if test="page!=null and limit!=null">
+            limit ${(page-1)*limit},${limit}
+        </if>
+    </select>
+
+    <select id="selectAllReport" resultType="map">
+        select rep.reportId,rep.reportName,rep.sex,rep.age,rep.price,rep.state,DATE_FORMAT(rep.time,'%Y-%m-%d') as
+        time,rep.phone,rep.carid,rep.zhuan,rep.users ,dep.department,doc.doctorName,regtype.type from report as rep
+        left join departments as dep on(dep.departmentId=rep.department)
+        left join doctor as doc on(doc.doctorId=rep.doctor)
+        left join registeredtype as regtype on(regtype.registeredId=rep.reportType)
+        <if test="name!=null">
+            and rep.reportName like '%${name}%'
+        </if>
+
+        limit ${(page-1)*limit},${limit}
+    </select>
+</mapper>

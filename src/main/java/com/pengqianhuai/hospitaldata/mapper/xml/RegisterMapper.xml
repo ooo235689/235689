@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pengqianhuai.hospitaldata.mapper.RegisterMapper">
+
+    <select id="selectRegister" resultType="map">
+        select
+        reg.registerid,reg.userName,reg.age,reg.sex,dep.departmentId,dep.department,doc.doctorId,doc.doctorName,reg.diagnose,reg.address,reg.Phone
+        as phone,reg.Idcard as idcard,DATE_FORMAT(reg.registerDate,'%Y年%m月%d日') as registerDate,reg.Operator as
+        operator,reg.money,reg.state,be.bedId,be.bedname as bedName,reg.zhuan,reg.discount from register as reg
+        left join departments as dep on(reg.department=dep.departmentId)
+        left join doctor as doc on(doc.doctorId=reg.doctor)
+        left join bed as be on(be.bedId=reg.bedNum)
+
+        where 1=1 and reg.state=0 and be.bedname <![CDATA[<>]]> ''
+        <if test="registerid!=0">
+            and reg.registerid=#{registerid}
+        </if>
+        <if test="userName!=null">
+            and reg.userName like '%${userName}%'
+        </if>
+        <if test="page!=null and limit!=null">
+            limit ${(page-1)*limit},${limit}
+        </if>
+
+
+    </select>
+
+    <select id="selectPay" resultType="map">
+        select pay.payid,pay.payDate,pay.money,pay.registerid,reg.userName from pay
+        left join register as reg on(pay.registerid=reg.registerId)
+        where pay.registerid=#{registerid}
+        <if test="page!=null and limit!=null">
+            limit ${(page-1)*limit},${limit}
+        </if>
+    </select>
+
+    <select id="selectLeaveHospital" resultType="map">
+        select reg.userName,reg.diagnose,reg.sex,reg.zhuan,reg.discount,reg.Operator as operator,reg.Idcard as
+        idcard,DATE_FORMAT(reg.registerDate,'%Y年%m月%d日') as registerDate,DATE_FORMAT(reg.endDate,'%Y年%m月%d日') as
+        endDate,reg.age,reg.address,be.bedId,be.bedName,datediff(reg.registerDate,reg.endDate) as day,
+        dep.department,doc.doctorId,doc.doctorName,reg.state,
+        reg.registerId,reg.Phone as phone,reg.money,sel.price,reg.money-sel.price as
+        prices
+        from register as reg
+        left join bed as be on(be.bedId=reg.bedNum)
+        left join departments as dep on(reg.department=dep.departmentId)
+        left join doctor as doc on(doc.doctorId=reg.doctor)
+        left join (select registerId,sum(repicetotal) as price from hospitalprice where state in(1,2) GROUP BY
+        registerId) as sel on(sel.registerId=reg.registerid)
+        where reg.state=2
+        <if test="registerId!=null">
+            and reg.registerId =#{registerId}
+        </if>
+        <if test="page!=null and limit!=null">
+            limit ${(page-1)*limit},${limit}
+        </if>
+
+
+    </select>
+
+</mapper>
