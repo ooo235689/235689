@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hospitaldata.mapper.ProjecttypeMapper">
+
+    <select id="selectPharmacy" resultType="map">
+        select pha.pharmacyId,pha.pharmacyName,pha.drugstoreId,pha.skullId,pha.warehouseId,pha.unit,
+pha.sellingPrice,pha.area,pha.type,pha.produceDate,pha.validDate,un.unitName,pha.drugstorenum,pha.skullbatch from pharmacy as pha
+left join unit as un on(pha.unit=un.unitId) where 1=1
+    <if test="name!=null">
+        and pha.pharmacyName like '%${name}%'
+    </if>
+    limit ${(page-1)*limit},${limit}
+    </select>
+
+</mapper>

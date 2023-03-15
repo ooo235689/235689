@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hospitaldata.mapper.SysMenuMapper">
+    <select id="selectPid" resultType="com.hospitaldata.entity.SysMenu">
+        select menu.* from sys_menu as menu
+        left join sys_role_menu as arm on(arm.mid=menu.id)
+        where 1=1
+        <if test="pid!=-1">
+            and menu.pid=#{pid}
+        </if>
+        <if test="rid!=null">
+            and arm.rid=#{rid}
+        </if>
+
+    </select>
+</mapper>

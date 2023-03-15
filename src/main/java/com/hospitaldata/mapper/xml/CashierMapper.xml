@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hospitaldata.mapper.CashierMapper">
+
+    <select id="outpatientTodayStatistics" resultType="map">
+        select durgname as name,sum(repicetotal) as value from cashier
+        where 1=1
+        <if test="time">
+            and ctime=#{time}
+        </if>
+        group by durgname
+    </select>
+
+    <select id="outpatientYearStatistics" resultType="map">
+        select DATE_FORMAT(ctime,'%Y') as name,sum(repiceprice) as value from cashier group by DATE_FORMAT(ctime,'%Y')
+    </select>
+
+    <select id="hospitalizationYearStatistics" resultType="map">
+        select DATE_FORMAT(htime,'%Y') as name,sum(repicetotal) as value from hospitalprice group by DATE_FORMAT(htime,'%Y')
+    </select>
+
+    <select id="outpatientMonthStatistics" resultType="String">
+        select IFNULL(b.sum,0) as sum from
+(
+SELECT 1 AS date UNION
+SELECT 2 AS date UNION
+SELECT 3 AS date UNION 
+SELECT 4 AS date UNION
+SELECT 5 AS date UNION
+SELECT 6 AS date UNION
+SELECT 7 AS date UNION
+SELECT 8 AS date UNION
+SELECT 9 AS date UNION
+SELECT 10 AS date UNION
+SELECT 11 AS date UNION
+SELECT 12 AS date
+) a
+left join
+(select DATE_FORMAT(ctime,'%m') as month,sum(repicetotal) as sum from cashier  where DATE_FORMAT(ctime,'%Y')=#{year}  GROUP BY DATE_FORMAT(ctime,'%m'))  as  b
+on a.date = b.month
+ORDER BY a.date
+    </select>
+<select id="hospitalizationMonthStatistics" resultType="String">
+    select IFNULL(b.sum,0) as sum from
+(
+SELECT 1 AS date UNION
+SELECT 2 AS date UNION
+SELECT 3 AS date UNION
+SELECT 4 AS date UNION
+SELECT 5 AS date UNION
+SELECT 6 AS date UNION
+SELECT 7 AS date UNION
+SELECT 8 AS date UNION
+SELECT 9 AS date UNION
+SELECT 10 AS date UNION
+SELECT 11 AS date UNION
+SELECT 12 AS date
+) a
+left join
+(select DATE_FORMAT(htime,'%m') as month,sum(repicetotal) as sum from hospitalprice  where DATE_FORMAT(htime,'%Y')=#{year}  GROUP BY DATE_FORMAT(htime,'%m'))  as  b
+on a.date = b.month
+ORDER BY a.date
+</select>
+</mapper>

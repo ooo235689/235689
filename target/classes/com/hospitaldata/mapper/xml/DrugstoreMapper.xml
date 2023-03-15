@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hospitaldata.mapper.DrugstoreMapper">
+
+    <select id="selectdrugstore" resultType="map">
+        select ar.areaName,ar.areaId,dru.rugstoreId,dru.drugstoreName,dru.drugstorenum,dru.produceDate,dru.validDate,dru.tradePrice,dru.unit,un.unitId,un.unitName,supp.supplierId,supp.supplierName,sku.skullId,sku.skullName,dru.type,ty.typeName,ty.typeId,dru.batch,dru.sellingPrice,
+        war.warehouseId,war.supplierName as warehouseName from drugstore as dru
+        left join upplier as supp on(supp.supplierId=dru.supplierId)
+        left join unit as un on(un.unitId=dru.unit)
+        left join skull as sku on(sku.skullId=dru.skullId)
+        left join warehuose as war on(war.warehouseId=dru.warehouseId)
+        left join area as ar on(ar.areaId=dru.area)
+        left join type as ty on(dru.type=ty.typeId)
+        where 1=1
+        <if test="time!=null">
+            and dru.validDate<![CDATA[<]]>now()
+        </if>
+        <if test="select==1">
+            and dru.drugstorenum<![CDATA[<=]]>30
+        </if>
+        <if test="drugstoreName!=null">
+            and dru.drugstoreName like '%${drugstoreName}%'
+        </if>
+        <if test="page!=null and limit!=null">
+            limit ${(page-1)*limit},${limit}
+        </if>
+    </select>
+
+</mapper>

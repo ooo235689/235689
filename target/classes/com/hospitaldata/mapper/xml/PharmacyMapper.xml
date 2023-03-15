@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hospitaldata.mapper.PharmacyMapper">
+
+    <select id="selectPharmacy" resultType="map">
+        select pha.pharmacyId,pha.pharmacyName,pha.drugstoreId,pha.skullId,pha.warehouseId,pha.unit,
+        pha.sellingPrice,pha.area,pha.type,pha.produceDate,pha.validDate,un.unitName as
+        unitname,pha.drugstorenum,pha.skullbatch
+        from pharmacy as pha
+        left join unit as un on(pha.unit=un.unitId)
+        where 1=1
+        <if test="name!=null">
+            and pha.pharmacyName like '%${name}%'
+        </if>
+
+        limit ${(page-1)*limit},${limit}
+    </select>
+
+    <select id="selectPharmacyType" resultType="map">
+        select pha.pharmacyId,pha.pharmacyName,pha.drugstoreId,pha.skullId,pha.warehouseId,pha.unit as unitId,
+        pha.sellingPrice,pha.area as areaId,ar.areaName,pha.type as typeId,pha.produceDate,pha.validDate,un.unitName as
+        unitName,pha.drugstorenum,pha.skullbatch,pha.type
+        from pharmacy as pha
+        left join unit as un on(pha.unit=un.unitId)
+        left join type as ty on(ty.typeId=pha.type)
+        left join area as ar on(ar.areaId=pha.area)
+        where 1=1
+        <if test="pharmacyId!=null">
+            and pha.pharmacyId=#{pharmacyId}
+        </if>
+        <if test="name!=null">
+            and pha.pharmacyName like '%${name}%'
+        </if>
+        <if test="page!=null and limit!=null">
+            limit ${(page-1)*limit},${limit}
+        </if>
+    </select>
+
+
+    <select id="selectpharmacy2" resultType="map">
+        select pha.pharmacyId,pha.pharmacyName,pha.produceDate,pha.validDate
+        ,sku.skullId,sku.skullName,pha.area,ar.areaName,pha.unit,un.unitId,
+        pha.type,ty.typeName,pha.skullbatch,pha.sellingPrice,war.warehouseId,
+        war.supplierName,pha.drugstorenum,pha.drugstoreId,un.unitName
+        from pharmacy as pha
+        left join skull as sku on(sku.skullId=pha.skullId)
+        left join area as ar on(ar.areaId=pha.area)
+        left join unit as un on(un.unitId=pha.unit)
+        left join type as ty on(pha.type=ty.typeId)
+        left join warehuose as war on(pha.warehouseId=war.warehouseId)
+        where 1=1
+        <if test="pharmacyName!=null">
+            and pha.pharmacyName like '%${pharmacyName}%'
+        </if>
+        limit ${(page-1)*limit},${limit}
+    </select>
+
+</mapper>

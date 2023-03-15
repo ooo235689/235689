@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hospitaldata.mapper.BedMapper">
+
+    <select id="selectBed" resultType="map">
+        select be.bedId,be.bedname,be.departmentId,dep.department,be.state,be.Price as price from bed as be
+        left join departments as dep on(dep.departmentId=be.departmentId) where 1=1
+        <if test="bedname!=null">
+            and be.bedname like '%${bedname}%'
+        </if>
+        limit ${(page-1)*limit},${limit}
+    </select>
+
+</mapper>
